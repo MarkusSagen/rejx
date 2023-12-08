@@ -1,0 +1,75 @@
+name: Test and Lint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_NAME: copilot
+  PYTHON_VERSION: "3.11.2"
+
+jobs:
+  install_dependencies:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest-cov==4.1.0 pytest==7.4.3 \
+            poetry==1.7.1 poetry-plugin-export==1.6.0 \
+            pre-commit==3.5.0 ruff==0.1.6
+
+  linting:
+    name: Code Linting
+    needs: install_dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest-cov==4.1.0 pytest==7.4.3 \
+            poetry==1.7.1 poetry-plugin-export==1.6.0 \
+            pre-commit==3.5.0 ruff==0.1.6
+
+      - name: Run Code Linting
+        run: |
+          ruff --output-format=github --fix --unsafe-fixes src
+          make lint
+
+  unit_tests:
+    name: Unit Tests
+    needs: install_dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest-cov==4.1.0 pytest==7.4.3 \
+            poetry==1.7.1 poetry-plugin-export==1.6.0 \
+            pre-commit==3.5.0 ruff==0.1.6
+
+      - name: Run unit tests
+        run: |
+          pip install -e .
+          make test

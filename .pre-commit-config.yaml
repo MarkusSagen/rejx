@@ -1,0 +1,72 @@
+default_language_version:
+  python: python3.10
+
+default_stages: [ commit, manual ]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+        args: [ --maxkb=55000 ]
+      - id: check-ast
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: pretty-format-json
+        args: [ --no-ensure-ascii, --autofix ]
+      - id: check-toml
+      - id: check-yaml
+        exclude: k8s-helm
+        args: [ --unsafe ]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: [ --fix=auto ]
+      - id: name-tests-test
+        args: [ --pytest-test-first ]
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: no-commit-to-branch
+        args: [ --branch, master ]
+
+  # isort
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: [ --filter-files, --profile, "black" ]
+
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v3.1.0
+    hooks:
+      - id: add-trailing-comma
+
+  # black
+  - repo: https://github.com/ambv/black
+    rev: 23.1.0
+    hooks:
+      - id: black
+
+  # black styling in docs:
+  - repo: https://github.com/asottile/blacken-docs
+    rev: v1.12.1
+    hooks:
+      - id: blacken-docs
+        additional_dependencies: [ black==23.1.0 ] # Dependency on broken click (see black)
+        entry: blacken-docs --skip-errors
+
+  # ruff
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.1.2
+    hooks:
+      - id: ruff
+        args: [ "--fix", "--preview" ]
+
+ci:
+  autofix_commit_msg: 🎨 [pre-commit.ci] Auto format from pre-commit.com hooks
+  autoupdate_commit_msg: ⬆ [pre-commit.ci] pre-commit autoupdate
