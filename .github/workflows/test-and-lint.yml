@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  PROJECT_NAME: copilot
+  PROJECT_NAME: rejx
   PYTHON_VERSION: "3.10.10"
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
 
       - name: Run Code Linting
         run: |
-          ruff --output-format=github --fix --preview --unsafe-fixes src
+          ruff --fix --preview --unsafe-fixes src
           make lint
 
   unit_tests:
