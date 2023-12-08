@@ -22,14 +22,8 @@ deploy: build
 	echo "not implemented"
 
 .PHONY: lint
-lint:
-	poetry run ruff check --fix src/
+lint: pre-commit
 
-.PHONY: format
-format:
-	poetry run isort src/
-	poetry run black src/
-	poetry run ruff --fix --preview src/
 
 .PHONY: test
 test:

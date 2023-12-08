@@ -228,7 +228,7 @@ follow_imports_for_stubs = true
 ignore_missing_imports = true
 
 [tool.poetry.scripts]
-rejx = "rejx.cli:app"
+rejx = "rejx.__main__:app"
 
 [build-system]
 requires = ["poetry-core >= 1.0.0"]
