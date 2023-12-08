@@ -3,8 +3,13 @@ name = "rejx"
 version = "0.0.1"
 description = "Rej(spe)X - Deal with .rej file with minimal pain"
 authors = ["Markus Sagen <Markus.John.Sagen@gmail.com>"]
-license = "MIT"
+keywords = ["git", "cookiecutter", "cruft", "rej"]
 readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/markussagen/rejx"
+repository = "https://github.com/markussagen/rejx"
+include = ["LICENSE"]
+
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
