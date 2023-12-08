@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rejx"
-version = "0.0.1"
+version = "0.0.2"
 description = "Rej(spe)X - Deal with .rej file with minimal pain"
 authors = ["Markus Sagen <Markus.John.Sagen@gmail.com>"]
 keywords = ["git", "cookiecutter", "cruft", "rej"]
