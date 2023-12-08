@@ -24,10 +24,9 @@ deploy: build
 .PHONY: lint
 lint: pre-commit
 
-
 .PHONY: test
 test:
-	poetry run pytest -vv --disable-warnings src/tests/
+	poetry run pytest -vv --disable-warnings tests/
 
 .PHONY: clean
 clean:

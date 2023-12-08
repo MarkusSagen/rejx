@@ -8,7 +8,7 @@ on:
 
 env:
   PROJECT_NAME: copilot
-  PYTHON_VERSION: "3.11.2"
+  PYTHON_VERSION: "3.10.10"
 
 jobs:
   install_dependencies:
@@ -48,7 +48,7 @@ jobs:
 
       - name: Run Code Linting
         run: |
-          ruff --output-format=github --fix --unsafe-fixes src
+          ruff --output-format=github --fix --preview --unsafe-fixes src
           make lint
 
   unit_tests:
