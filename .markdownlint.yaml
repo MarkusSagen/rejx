@@ -1,0 +1,32 @@
+# default to true for all rules
+default: true
+
+# MD007/unordered-list-indent
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md007---unordered-list-indentation
+MD007:
+  indent: 4
+
+# MD013/line-length
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md013---line-length
+MD013: false
+
+# MD024/no-duplicate-heading
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md024---multiple-headings-with-the-same-content
+MD024:
+  # Allow when nested under different parents e.g. CHANGELOG.md
+  siblings_only: true
+
+# MD029/ordered-list-item-prefix
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md029---ordered-list-item-prefix
+MD029:
+  # This makes reviewing changes of ordered list easier
+  # https://mdformat.readthedocs.io/en/stable/users/style.html#ordered-lists
+  style: one
+
+# MD033/no-inline-html
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md033---inline-html
+MD033: false
+
+# MD041/first-line-h1
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md041---first-line-in-a-file-should-be-a-top-level-heading
+MD041: false

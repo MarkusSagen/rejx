@@ -1,4 +1,5 @@
 """CLI commands for rejx."""
+
 from __future__ import annotations
 
 import glob
@@ -306,7 +307,8 @@ def build_file_tree(rej_files: list) -> Tree:
         ```
     """
     tree = Tree(
-        ":open_file_folder: Rejected Files Tree", guide_style="bold bright_blue",
+        ":open_file_folder: Rejected Files Tree",
+        guide_style="bold bright_blue",
     )
     node_dict = {}
 
@@ -372,7 +374,8 @@ def ls(
 @app.command()
 def clean(
     preview: bool = typer.Option(
-        False, help="Preview files before deleting",
+        False,
+        help="Preview files before deleting",
     ),
 ) -> None:
     """Deletes all .rej files in the current directory and subdirectories.
