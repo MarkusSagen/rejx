@@ -7,7 +7,6 @@ import os
 import pathlib
 import re
 from difflib import unified_diff
-from typing import Annotated, Optional
 
 import typer
 from rich.console import Console
@@ -119,7 +118,9 @@ def apply_changes(target_lines: list[str], rej_lines: list[str]) -> list[str]:
                 new_lines.extend(target_lines[len(new_lines) : hunk_start])
                 continue
 
-        chunks_not_in_rej_file = len(new_lines) + len(current_hunk_changes) < len(target_lines)
+        chunks_not_in_rej_file = len(new_lines) + len(current_hunk_changes) < len(
+            target_lines,
+        )
 
         if processing_hunk:
             if line.startswith("+"):
@@ -127,7 +128,9 @@ def apply_changes(target_lines: list[str], rej_lines: list[str]) -> list[str]:
                 current_hunk_changes.append(line[1:].rstrip("\n") + "\n")
             # Context line: keep this line from the original file
             elif not line.startswith("-") and chunks_not_in_rej_file:
-                current_hunk_changes.append(target_lines[len(new_lines) + len(current_hunk_changes)])
+                current_hunk_changes.append(
+                    target_lines[len(new_lines) + len(current_hunk_changes)],
+                )
 
     # Apply the last hunk
     if processing_hunk:
@@ -237,7 +240,13 @@ def diff() -> None:
 
             modified_lines = apply_changes(target_lines.copy(), rej_lines)
             diff = "".join(
-                unified_diff(target_lines, modified_lines, fromfile=target_file_path, tofile=rej_file, lineterm=""),
+                unified_diff(
+                    target_lines,
+                    modified_lines,
+                    fromfile=target_file_path,
+                    tofile=rej_file,
+                    lineterm="",
+                ),
             )
 
             file_logs.append({"filename": rej_file, "diff": diff})
@@ -247,11 +256,25 @@ def diff() -> None:
 
     # Display diff
     with console.pager(styles=True):
-        console.print(Text("Diff Preview (use arrow keys or Vim bindings to navigate, q to quit)", style="bold blue"))
+        console.print(
+            Text(
+                "Diff Preview (use arrow keys or Vim bindings to navigate, q to quit)",
+                style="bold blue",
+            ),
+        )
 
         for logs in file_logs:
             console.rule(f"\n{logs['filename']}\n", align="left")
-            console.print(Syntax(logs["diff"], "diff", theme="monokai", word_wrap=True, line_numbers=True), style="dim")
+            console.print(
+                Syntax(
+                    logs["diff"],
+                    "diff",
+                    theme="monokai",
+                    word_wrap=True,
+                    line_numbers=True,
+                ),
+                style="dim",
+            )
 
 
 def build_file_tree(rej_files: list) -> Tree:
@@ -281,7 +304,9 @@ def build_file_tree(rej_files: list) -> Tree:
         console.print(tree)
         ```
     """
-    tree = Tree(":open_file_folder: Rejected Files Tree", guide_style="bold bright_blue")
+    tree = Tree(
+        ":open_file_folder: Rejected Files Tree", guide_style="bold bright_blue",
+    )
     node_dict = {}
 
     for rej_file in rej_files:
@@ -289,7 +314,9 @@ def build_file_tree(rej_files: list) -> Tree:
         current_node = tree
 
         for part in path_parts:
-            key = os.path.join(*path_parts[: path_parts.index(part) + 1])  # noqa: PTH118
+            key = os.path.join(
+                *path_parts[: path_parts.index(part) + 1],
+            )
             if key not in node_dict:
                 # If part is a directory, color it blue/purple
                 is_dir = part != path_parts[-1]
@@ -301,7 +328,9 @@ def build_file_tree(rej_files: list) -> Tree:
 
 
 @app.command()
-def ls(view: Annotated[Optional[str], typer.Option("list", help="View as 'list' or 'tree'")] = "list") -> None:
+def ls(
+    view: str | None = typer.Option("list", help="View as 'list' or 'tree'"),
+) -> None:
     """Lists all .rej files in the current directory and subdirectories.
 
     Supports different view formats.
@@ -341,9 +370,13 @@ def ls(view: Annotated[Optional[str], typer.Option("list", help="View as 'list' 
 
 @app.command()
 def clean(
-    preview: bool = typer.Option(False, help="Preview files before deleting"),  # noqa: FBT001,FBT003
+    preview: bool = typer.Option(
+        False, help="Preview files before deleting",
+    ),
 ) -> None:
-    """Deletes all .rej files in the current directory and subdirectories. Optional preview before deletion.
+    """Deletes all .rej files in the current directory and subdirectories.
+
+    Optional preview before deletion.
 
     Args:
     ----
@@ -371,14 +404,16 @@ def clean(
         console.print("[bold red]These files will be deleted:[/bold red]")
         for file in rej_files:
             console.print(f" - {file}")
-        if not Confirm.ask("[bold yellow]Do you want to continue with deletion?[/bold yellow]"):
+        if not Confirm.ask(
+            "[bold yellow]Do you want to continue with deletion?[/bold yellow]",
+        ):
             raise typer.Exit
 
     try:
         for file in rej_files:
             pathlib.Path(file).unlink()
             console.print(f"[green]Deleted:[/green] {file}")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         console.print(f"[red]Error deleting {file}:[/red] {e}")
 
     console.print("[bold green]Deletion complete.[/bold green]")

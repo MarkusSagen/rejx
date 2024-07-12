@@ -12,15 +12,6 @@ pre-commit: setup-pre-commit
 install:
 	poetry install
 
-.PHONY: build
-build:
-	echo "not implemented"
-
-# already done by the CI/CD pipeline
-.PHONY: deploy
-deploy: build
-	echo "not implemented"
-
 .PHONY: lint
 lint: pre-commit
 
