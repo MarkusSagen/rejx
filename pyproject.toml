@@ -84,7 +84,7 @@ isort = { known-first-party = ["heimdall", "tests"] }
 mccabe = { max-complexity = 10 }
 pydocstyle = { convention = "google" }
 exclude = ["*.ipynb"]
-ignore = ["E203", "E501", "FIX002", "PTH123", "C901", "PD101", "COM812", "PTH118", "PTH207", "PTH207"]
+ignore = ["E203", "E501", "FIX002", "PTH123", "C901", "PD101", "COM812", "PTH118", "PTH207", "PTH207", "UP007"]  # Typer does not support UP007
 extend-select = ["Q", "RUF100", "C90", "UP", "I", "T", "B", "F", "Q", "COM812"] # "D",
 extend-ignore = ["D105", "D107", "D205", "D415", "EM101", "G004", "ARG001", "ARG002", "PD901", "RET504"]
 fixable = ["F", "N", "D", "W", "INP", "PLC", "PLR", "PLW", "RUF", "SIM", "Q", "UP", "TID", "I", "EM", "FBT", "PD", "E501"]

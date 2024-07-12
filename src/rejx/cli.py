@@ -7,6 +7,7 @@ import os
 import pathlib
 import re
 from difflib import unified_diff
+from typing import Optional
 
 import typer
 from rich.console import Console
@@ -329,7 +330,7 @@ def build_file_tree(rej_files: list) -> Tree:
 
 @app.command()
 def ls(
-    view: str | None = typer.Option("list", help="View as 'list' or 'tree'"),
+    view: Optional[str] = typer.Option("list", help="View as 'list' or 'tree'"),
 ) -> None:
     """Lists all .rej files in the current directory and subdirectories.
 
