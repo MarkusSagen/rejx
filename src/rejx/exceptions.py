@@ -1,4 +1,5 @@
 """Custom exceptions raised by rejx."""
+
 from click import ClickException
 
 

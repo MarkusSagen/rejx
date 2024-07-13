@@ -8,68 +8,73 @@ on:
 
 env:
   PROJECT_NAME: rejx
-  PYTHON_VERSION: "3.10.10"
+  PYTHON_VERSION: 3.10.10
+  POETRY_VERSION: 1.7.1
 
 jobs:
-  install_dependencies:
-    name: Install Dependencies
+  test_and_lint:
+    name: Lint and Test
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-keys.outputs.cache-key }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+        ###################################################################
+        #                                                                 #
+        #                     Setup Project                               #
+        #                                                                 #
+        ###################################################################
+      - name: Setup Justfile
+        uses: extractions/setup-just@v1
+      - name: Check justfile linting
+        run: 'just --unstable --fmt --check || "justfile is not formatted!\nrun: `just fmt` and commit again"'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
+          cache: pip
 
-      - name: Install dependencies
-        run: |
-          pip install pytest-cov==4.1.0 pytest==7.4.3 \
-            poetry==1.7.1 poetry-plugin-export==1.6.0 \
-            pre-commit==3.5.0 ruff==0.1.6
-
-  linting:
-    name: Code Linting
-    needs: install_dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
+      - name: Setup Poetry for Python
+        uses: abatilo/actions-poetry@v2
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
-
-      - name: Install dependencies
+          python-version: ${{ env.POETRY_VERSION }}
+      - name: Setup a local virtual environment (if no poetry.toml file)
         run: |
-          pip install pytest-cov==4.1.0 pytest==7.4.3 \
-            poetry==1.7.1 poetry-plugin-export==1.6.0 \
-            pre-commit==3.5.0 ruff==0.1.6
-
-      - name: Run Code Linting
-        run: |
-          ruff --fix --preview --unsafe-fixes src
-          make lint
-
-  unit_tests:
-    name: Unit Tests
-    needs: install_dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
 
-      - name: Install dependencies
-        run: |
-          pip install pytest-cov==4.1.0 pytest==7.4.3 \
-            poetry==1.7.1 poetry-plugin-export==1.6.0 \
-            pre-commit==3.5.0 ruff==0.1.6
+      - name: Install the project dependencies
+        run: just setup
 
-      - name: Run unit tests
-        run: |
-          pip install -e .
-          make test
+        ###################################################################
+        #                                                                 #
+        #                   Linting and Format                            #
+        #                                                                 #
+        ###################################################################
+      - name: Lint code
+        run: just lint
+
+        ###################################################################
+        #                                                                 #
+        #                           Testing                               #
+        #                                                                 #
+        ###################################################################
+      - name: Run unit test
+        run: just test
+
+        ###################################################################
+        #                                                                 #
+        #                           CI/CD Bots                            #
+        #                                                                 #
+        ###################################################################
+
+        # https://pypi.org/project/pytest-md-report/
+      - name: Run tests with reports
+        run: poetry run pytest --md-report --md-report-flavor gfm --md-report-output report.md

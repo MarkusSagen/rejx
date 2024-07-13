@@ -1,4 +1,5 @@
 """Return rejx version."""
+
 from importlib import metadata  # pragma: no cover
 
 # Used to automatically set version number from github actions

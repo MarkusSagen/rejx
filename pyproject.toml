@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rejx"
-version = "0.0.2"
+version = "0.0.3"
 description = "Rej(spe)X - Deal with .rej file with minimal pain"
 authors = ["Markus Sagen <Markus.John.Sagen@gmail.com>"]
 keywords = ["git", "cookiecutter", "cruft", "rej"]
@@ -10,227 +10,228 @@ homepage = "https://github.com/markussagen/rejx"
 repository = "https://github.com/markussagen/rejx"
 include = ["LICENSE"]
 
-
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
-typer = "^0.9.0"
-rich = "^13.7.0"
-tabulate = "^0.9.0"
+python = ">=3.8,<4.0"
+typer = ">=0.8.0"
+rich = ">=12.0.0"
 
 [tool.poetry.group.dev.dependencies]
 # cmd
 pre-commit = "3.4.0"
-# security
-bandit = "^1.7.5"
+ipykernel = "^6.20.0"
 # linter and formatter
-black = "23.7.0"
-isort = "5.12.0"
-ruff = "0.1.6"
-nbstripout = "0.6.1"
+ruff = "0.4.10"
 # testing
-pytest = "^7.4.2"
-pytest-cov = "^4.1.0"
-pytest-mock = "^3.11.1"
-# Debug
+pytest = ">=7.4.2"
+pytest-asyncio = "^0.23.4"
+pytest-cov = ">=4.1.0"
+pytest-mock = ">=3.11.1"
+pytest-xdist = ">=3.0.0"
+pytest-better-parametrize = "^0.2.0"
+pytest-clarity = "^1.0.1"
+pytest-pretty = "^1.2.0"
+pytest-env = "^1.1.3"
+pytest-schema = "^0.1.2"
+pytest-md-report = "^0.5.1"
+pytest-doctestplus = "^1.2.1"
+pytest-doctest-mkdocstrings = "^0.1.1"
+pytest-markdown-docs = "^0.5.1"
+pytest-accept = "^0.1.10"
+pytest-mypy = "*"
+deepdiff = "^6.7.1"
+# debug
 debugpy = "^1.8.0"
 ptvsd = "^4.3.2"
-mypy = "^1.7.0"
+devtools = ">=0.12.0"
+# type checking
+mypy = ">=1.2.0"
+pyright = ">=1.1.356"
+no-implicit-optional = "^1.3"
+types-tabulate = ">=0.9.0.20240106"
+# Testing template management and rej files
 cruft = "^2.15.0"
-cookiecutter = "^2.5.0"
 
 [tool.ruff]
+# -- cmd config
+fix = true
+preview = true
+# settings
 line-length = 120
 target-version = "py310"
+builtins = ["_"]
+cache-dir = "~/.cache/ruff"
+src = ["src", "tests"]
+include = ["*.py"]
+extend-exclude = [
+    "test_*.py",
+    "tests",
+    "docs",
+]
 
+[tool.ruff.format]
+# -- cmd config
+preview = true
+# settings
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+exclude = ["**/__init__.py"]
+
+[tool.ruff.lint]
+# -- cmd config
+preview = true
+# settings
+flake8-quotes = { inline-quotes = "double", multiline-quotes = "double" }
+flake8-tidy-imports = { ban-relative-imports = "all" }
+flake8-comprehensions = { "allow-dict-calls-with-keyword-arguments" = true }  # C408 - Allow dict calls with keyword arguments
+isort = { known-first-party = ["heimdall", "tests"] }
+mccabe = { max-complexity = 10 }
+pydocstyle = { convention = "google" }
+exclude = ["*.ipynb"]
+ignore = ["E203", "E501", "FIX002", "PTH123", "C901", "PD101", "COM812", "PTH118", "PTH207", "PTH207", "UP007"]  # Typer does not support UP007
+extend-select = ["Q", "RUF100", "C90", "UP", "I", "T", "B", "F", "Q", "COM812"] # "D",
+extend-ignore = ["D105", "D107", "D205", "D415", "EM101", "G004", "ARG001", "ARG002", "PD901", "RET504"]
+fixable = ["F", "N", "D", "W", "INP", "PLC", "PLR", "PLW", "RUF", "SIM", "Q", "UP", "TID", "I", "EM", "FBT", "PD", "E501"]
+extend-safe-fixes = ["E", "F401", "E501"]
+extend-unsafe-fixes = ["E", "F401", "E501"]
 select = [
-  "F",     # pyflakes
-  "E",     # pycodestyle
-  "W",     # pycodestyle
-  "C90",   # mccabe
-  "I",     # isort
-  "N",     # pep8-naming
-  "D",     # pydocstyle
-  "UP",    # pyupgrade
-  "YTT",   # flake8-2020
-  "ANN",   # flake8-annotations
-  "ASYNC", # flake8-async
-  "S",     # flake8-bandit
-  "BLE",   # flake8-blind-except
-  "FBT",   # flake8-boolean-trap
-  "A",     # flake8-builtins
-  "COM",   # flake8-commas
-  "B",     # flake8-bugbear
-  "C4",    # flake8-comprehensions
-  "DTZ",   # flake8-datetimez
-  "T10",   # flake8-debugger
-  "EM",    # flake8-errmsg
-  "EXE",   # flake8-executable
-  "FA",    # flake8-future-annotations
-  "ISC",   # flake8-implicit-str-concat
-  "ICN",   # flake8-import-conventions
-  "G",     # flake8-logging-format
-  "INP",   # flake8-no-pep420
-  "PIE",   # flake8-pie
-  "T20",   # flake8-print
-  "PYI",   # flake8-pyi
-  "PT",    # flake8-pytest-style
-  "Q",     # flake8-quotes
-  "RSE",   # flake8-raise
-  "RET",   # flake8-return
-  "SLF",   # flake8-self
-  "SLOT",  # flake8-slots
-  "SIM",   # flake8-simplify
-  "TID",   # flake8-tidy-imports
-  "TCH",   # flake8-type-checking
-  "INT",   # flake8-gettext
-  "ARG",   # flake8-unused-arguments
-  "PTH",   # flake8-use-pathlib
-  "TD",    # flake8-todos
-  "FIX",   # flake8-fixme
-  "ERA",   # eradicate
-  "PD",    # pandas-vet
-  "PGH",   # pygrep-hooks
-  "PL",    # pylint
-  "TRY",   # tryceratops
-  "NPY",   # NumPy-specific rules
-  "AIR",   # Airflow
-  "PERF",  # Perflint
-  "LOG",   # flake8-logging
-  "RUF",   # Ruff-specific rules
+    "F",     # pyflakes
+    "E",     # pycodestyle
+    "W",     # pycodestyle
+    "C90",   # mccabe
+    "I",     # isort
+    # "D",     # pydocstyle
+    "ASYNC", # flake8-async
+    "A",     # flake8-builtins
+    "COM",   # flake8-commas
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "DTZ",   # flake8-datetimez
+    "T10",   # flake8-debugger
+    "EM",    # flake8-errmsg
+    "EXE",   # flake8-executable
+    "FA",    # flake8-future-annotations
+    "ICN",   # flake8-import-conventions
+    "G",     # flake8-logging-format
+    "INP",   # flake8-no-pep420
+    "PIE",   # flake8-pie
+    "T20",   # flake8-print
+    "PT",    # flake8-pytest-style
+    "Q",     # flake8-quotes
+    "RSE",   # flake8-raise
+    "RET",   # flake8-return
+    "SIM",   # flake8-simplify
+    "TID",   # flake8-tidy-imports
+    "TCH",   # flake8-type-checking
+    "INT",   # flake8-gettext
+    "ARG",   # flake8-unused-arguments
+    "PTH",   # flake8-use-pathlib
+    "FIX",   # flake8-fixme
+    "ERA",   # eradicate
+    "PD",    # pandas-vet
+    "PGH",   # pygrep-hooks
+    "NPY",   # NumPy-specific rules
+    "PERF",  # Perflint
+    "RUF",   # Ruff-specific rules
 ]
 
-ignore = [
-  "D101",
-  "D103",
-  "D203",
-  "D205",
-  "D213",
-  "D401",
-  "D404",
-  "C901",
-  "E203",
-  "E501",
-  "E741",
-  "G004",
-  "S104",
-  "UP006",   # https://github.com/charliermarsh/ruff/pull/4427
-  "UP007",
-  "PLR0913",
-  "PTH123",
-  "PTH207",
-  "I001",
-  "N801",
-  "N803",
-  "N806",
-  "RET504",  # Allow extra assignment before return
-  "PD901",   # Pandas
-  "ANN002",  # Missing type annotation for `*args`
-  "ANN003",  # Missing type annotation for `**kwargs`
-  "ANN101",  # Missing type annotation for `self`
-  "ANN102",  # Missing type annotation for `cls`
-  "ANN204",  # Missing return type annotation for special method `__init__`
-  "ARG001",  # Unused function argument: `kwargs`
-  "ARG002",  # Unused function argument: `args`
-]
-
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = [
-  "F",
-  "N",
-  "D",
-  "W",
-  "INP",
-  "PLC",
-  "PLR",
-  "PLW",
-  "RUF",
-  "SIM",
-  "Q",
-  "UP",
-  "TID",
-  "I",
-  "EM",
-  "FBT001",
-  "FBT002",
-  # Pandas
-  "PD002",
-  "PD015",
-]
-unfixable = []
-
-exclude = [
-  ".bzr",
-  ".direnv",
-  ".eggs",
-  ".git",
-  ".hg",
-  ".mypy_cache",
-  ".nox",
-  ".pants.d",
-  ".pytype",
-  ".ruff_cache",
-  ".svn",
-  ".tox",
-  ".venv",
-  "__pypackages__",
-  "_build",
-  "buck-out",
-  "build",
-  "dist",
-  "node_modules",
-  "venv",
-]
-
-[tool.ruff.mccabe]
-max-complexity = 10
-
-# Ignore import violations in all `__init__.py` files.
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["D104", "E402", "F401", "F403", "F811", "W292"]
 "test_*.py" = ["ANN201", "S101"]
 
-[tool.isort]
-include_trailing_comma = true
-use_parentheses = true
-ensure_newline_before_comments = true
-profile = "black"
-line_length = 120
-
-[tool.black]
-skip-string-normalization = true
-line-length = 120
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.mypy_cache
-  | \.ruff_cache
-  | \.pytest_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | notebooks
-)/
-'''
-
-[tool.pytest.ini_options]
-addopts = """
---cov-report term-missing \
---cov src/mmm_prediction -ra"""
+[tool.coverage.run]
+omit = [
+    '*/.local/*',
+    '__init__.py',
+    'tests/*',
+    '*/tests/*',
+    '.venv/*'
+]
 
 [tool.coverage.report]
-fail_under = 0
+fail_under = 0  # TODO: increase this
 show_missing = true
-exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+precision = 2
+skip_empty = true
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError',
+    'if TYPE_CHECKING:',
+    'if typing.TYPE_CHECKING:',
+    '@overload',
+    '@typing.overload',
+    '\(Protocol\):$',
+    'typing.assert_never',
+    'assert_never',
+]
 
-[[tool.mypy.overrides]]
-module = []
+[tool.coverage.paths]
+source = ['src/rejx/']
+
+[tool.pytest.ini_options]
+# https://github.com/kedro-org/kedro/blob/main/pyproject.toml
+testpaths = ["tests", "src/rejx"]
+filterwarnings = ['error']
+xfail_strict = true
+# pytest flags
+addopts = [
+    '--cov-context', 'test',
+    '--cov-config', 'pyproject.toml',
+    '--cov-report', 'term',
+    '--cov-report', 'html:reports/coverage-html',
+    '--cov-report', 'xml:reports/coverage.xml',
+    '--cov-report', 'term-missing',
+    '--cov=.',
+    '--no-cov-on-fail',
+    '--ignore=docs',
+    '--capture=no',
+    '--log-cli-level=WARNING',
+    '-ra',
+    '-W', 'ignore'
+]
+# pytest-md-report
+md_report = true
+md_report_verbose = 0
+md_report_color = "auto"
+# doctest options
+doctest_optionflags = [
+    "ELLIPSIS",
+    "NORMALIZE_WHITESPACE",
+    "IGNORE_EXCEPTION_DETAIL"
+]
+
+[tool.pytest_env]
+# Mock some of the envs in `src/heimdall/constants.py`
+ENV = "cicd"
+LOG_LEVEL = "CRITICAL"  # INFO, WARNING, ERROR, CRITICAL
+
+[tool.mypy]
+plugins = [ ]
 follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
 follow_imports_for_stubs = true
 ignore_missing_imports = true
+disallow_untyped_defs = true
+
+[tool.pyright]
+include = [ "src/rejx" ]
+exclude = [ ".venv" ]
+venvPath = "."
+venv = ".venv"
+
+[tool.codespell]
+# codespell -L 'rejx' -S '.git,.venv,data,.env*,poetry*,*.log,*.csv,*.ipynb,*.html'
+skip = ".git,.venv,data,.env*,poetry*,*.log,*.csv,*.ipynb,*.html"
+ignore-words-list = 'rejx'
+quiet-level = 3
+count = true
 
 [tool.poetry.scripts]
 rejx = "rejx.__main__:app"

@@ -1,67 +1,100 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+exclude: ^(profiling/|tests/data/)
+
 default_language_version:
   python: python3.10
 
-default_stages: [ commit, manual ]
+default_stages: [commit, manual]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
       - id: check-added-large-files
-        args: [ --maxkb=55000 ]
+        args: [--maxkb=55000]
       - id: check-ast
       - id: check-docstring-first
       - id: check-executables-have-shebangs
       - id: check-json
       - id: pretty-format-json
-        args: [ --no-ensure-ascii, --autofix ]
+        args: [--no-ensure-ascii, --autofix]
       - id: check-toml
       - id: check-yaml
         exclude: k8s-helm
-        args: [ --unsafe ]
-      - id: check-case-conflict
+        args: [--unsafe]
+      - id: check-case-conflict # Check for files that would conflict in case-insensitive filesystems
       - id: check-merge-conflict
-      - id: debug-statements
+      - id: debug-statements # Check for debugger imports and py37+ `breakpoint()` calls in python source.
       - id: mixed-line-ending
-        args: [ --fix=auto ]
+        args: [--fix=auto]
       - id: name-tests-test
-        args: [ --pytest-test-first ]
+        args: [--pytest-test-first]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+        args: ["--markdown-linebreak-ext=md"]
       - id: end-of-file-fixer
-
-  # isort
-  - repo: https://github.com/timothycrosley/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        args: [ --filter-files, --profile, "black" ]
 
   - repo: https://github.com/asottile/add-trailing-comma
     rev: v3.1.0
     hooks:
       - id: add-trailing-comma
 
-  # black
-  - repo: https://github.com/ambv/black
-    rev: 23.1.0
-    hooks:
-      - id: black
-
-  # black styling in docs:
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
       - id: blacken-docs
-        additional_dependencies: [ black==23.1.0 ] # Dependency on broken click (see black)
+        additional_dependencies: [black==24.4.0]
         entry: blacken-docs --skip-errors
 
-  # ruff
+  - repo: https://github.com/DanielNoord/pydocstringformatter
+    rev: v0.7.3
+    hooks:
+      - id: pydocstringformatter
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.15
+    hooks:
+      - id: validate-pyproject
+
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-mkdocs
+          - mdformat-admon
+        exclude: |
+          (?x)^(
+            docs/formatter/black\.md
+            | docs/\w+\.md
+          )$
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0
+    hooks:
+      - id: markdownlint-fix
+        exclude: |
+          (?x)^(
+            docs/formatter/black\.md
+            | docs/\w+\.md
+          )$
+
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.1.6
+    rev: v0.4.10
     hooks:
       - id: ruff
-        args: [ "--fix", "--preview", "--unsafe-fixes" ]
+        exclude: "scripts/.*"
+        args: [--fix, --preview, --unsafe-fixes, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.4
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - tomli
+        exclude: '^poetry\.lock$'
 
 ci:
   autofix_commit_msg: 🎨 [pre-commit.ci] Auto format from pre-commit.com hooks
