@@ -42,7 +42,7 @@ def find_rej_files() -> list[str]:
         print(rej_files)  # Prints paths to all .rej files.
         ```
     """
-    return glob.glob("**/*.rej", recursive=True)
+    return glob.glob("**/*.rej", recursive=True) + glob.glob("**/.*.rej", recursive=True)
 
 
 def parse_rej_file(rej_file_path: str) -> list[str]:
