@@ -86,7 +86,7 @@ def test_fix(sample_rej_file: str):
 
 
 def test_fix_all():
-    result = runner.invoke(app, ["fix-all"])
+    result = runner.invoke(app, ["fix", "--all"])
     assert result.exit_code == 0
 
 
