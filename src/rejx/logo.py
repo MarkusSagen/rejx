@@ -1,5 +1,6 @@
 """Logo displayed when executing the rejx command."""
-from .version import __version__
+
+from rejx.version import __version__
 
 ascii_art = rf"""
 
