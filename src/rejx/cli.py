@@ -190,7 +190,7 @@ def process_rej_file(rej_file_path: str) -> bool:
 
 @app.command()
 def fix(
-    rej_files: Annotated[Optional[List[str]], typer.Argument(show_default=False)] = None,
+    rej_files: Annotated[Optional[List[str]], typer.Argument(default=None)],
     apply_to_all_files: Optional[bool] = typer.Option(False,"--all", help="Apply changes from all .rej files.", show_default=False)
     ) -> None:
     """Applies changes from a specified .rej file to its corresponding original file.
