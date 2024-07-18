@@ -11,7 +11,6 @@ from difflib import unified_diff
 from typing import Optional
 
 import typer
-from typing_extensions import Annotated
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.prompt import Confirm
