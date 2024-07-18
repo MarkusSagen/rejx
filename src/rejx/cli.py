@@ -345,7 +345,7 @@ def ls(
 
     Args:
     ----
-        hidden (Optional[bool], optional): Determines whether hidden files should be shown. Defaults to `hidden`.
+        hidden_files (Optional[bool], optional): Determines whether hidden files should be shown. Defaults to `True`.
         view (Optional[str], optional): The view format. Can be 'list' or 'tree'. Defaults to 'list'.
 
     Example:
