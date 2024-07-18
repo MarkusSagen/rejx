@@ -11,6 +11,8 @@ from difflib import unified_diff
 from typing import Optional
 
 import typer
+from typing_extensions import Annotated
+
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.prompt import Confirm
@@ -28,7 +30,7 @@ logging.basicConfig(
 app = typer.Typer()
 
 
-def find_rej_files(hidden: bool = True) -> list[str]:
+def find_rej_files(hidden_files: bool = True) -> list[str]:
     """Finds all .rej files in the current directory and its subdirectories.
 
     Returns:
@@ -42,7 +44,7 @@ def find_rej_files(hidden: bool = True) -> list[str]:
         print(rej_files)  # Prints paths to all .rej files.
         ```
     """
-    if hidden:
+    if hidden_files:
         return glob.glob("**/*.rej", recursive=True) + glob.glob("**/.*.rej", recursive=True)
     else:
         return glob.glob("**/*.rej", recursive=True)
@@ -332,10 +334,9 @@ def build_file_tree(rej_files: list) -> Tree:
 
     return tree
 
-
 @app.command()
 def ls(
-    hidden: Optional[bool] = typer.Option(True, help="Show or hide hidden files."),
+    hidden_files: Optional[bool] = typer.Option(True, "--no-hidden", help="Do not show hidden files.",show_default=False),
     view: Optional[str] = typer.Option("list", help="View as 'list' or 'tree'"),
 ) -> None:
     """Lists all .rej files in the current directory and subdirectories.
@@ -358,7 +359,7 @@ def ls(
           rejx ls --view tree
           ```
     """
-    rej_files = find_rej_files(hidden = hidden)
+    rej_files = find_rej_files(hidden_files = hidden_files)
     console = Console()
 
     if not rej_files:
