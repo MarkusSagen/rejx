@@ -188,17 +188,17 @@ def process_rej_file(rej_file_path: str) -> bool:
 
     return success
 
-
 @app.command()
 def fix(
-    rej_files: Annotated[Optional[List[str]], typer.Argument()] = None,
-    apply_to_all: Optional[bool] = typer.Option(False,"--apply-to-all", help="Fix all files.")
+    rej_files: Annotated[Optional[List[str]], typer.Argument(show_default=False)] = None,
+    apply_to_all_files: Optional[bool] = typer.Option(False,"--all", help="Apply changes from all .rej files.", show_default=False)
     ) -> None:
     """Applies changes from a specified .rej file to its corresponding original file.
 
     Args:
     ----
-        rej_file_path (str): The path to the .rej file to be processed.
+        rej_file (str): The path to the .rej file to be processed.
+        apply_to_all_files (Optional[bool]): Determines whether all files should be fixed. Default: False. 
 
     Example:
     -------
@@ -206,8 +206,13 @@ def fix(
         ```bash
         rejx fix path/to/file.rej
         ```
+
+        To fix all files, run: 
+        ```bash
+        rejx fix --all 
+        ```
     """
-    if apply_to_all:
+    if apply_to_all_files:
         for rej_file in find_rej_files(hidden=True):
             process_rej_file(rej_file)
     
