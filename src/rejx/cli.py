@@ -11,6 +11,9 @@ from difflib import unified_diff
 from typing import Optional
 
 import typer
+from typing import List
+from typing_extensions import Annotated
+
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.prompt import Confirm
@@ -187,7 +190,10 @@ def process_rej_file(rej_file_path: str) -> bool:
 
 
 @app.command()
-def fix(rej_file_path: str) -> None:
+def fix(
+    rej_files: Annotated[Optional[List[str]], typer.Argument()] = None,
+    apply_to_all: Optional[bool] = typer.Option(False,"--apply-to-all", help="Fix all files.")
+    ) -> None:
     """Applies changes from a specified .rej file to its corresponding original file.
 
     Args:
@@ -201,22 +207,16 @@ def fix(rej_file_path: str) -> None:
         rejx fix path/to/file.rej
         ```
     """
-    process_rej_file(rej_file_path)
-
-
-@app.command()
-def fix_all() -> None:
-    """Searches for and applies changes from all .rej files in the current directory and subdirectories.
-
-    Example:
-    -------
-        To fix all .rej files found in the current and subdirectories, run:
-        ```bash
-        rejx fix_all
-        ```
-    """
-    for rej_file in find_rej_files():
-        process_rej_file(rej_file)
+    if apply_to_all:
+        for rej_file in find_rej_files(hidden=True):
+            process_rej_file(rej_file)
+    
+    elif rej_files is None:
+        logging.error(f"No file name specified")
+    
+    else:
+        for rej_file in rej_files:
+            process_rej_file(rej_file)
 
 
 @app.command()
