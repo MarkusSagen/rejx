@@ -226,7 +226,8 @@ def fix(
 def diff(
     rej_files: List[str] = typer.Argument( default = None )
     ) -> None:
-    """Displays the diff of changes proposed by .rej files against their corresponding original files.
+    """Displays the diff of changes proposed by .rej files against their corresponding original files. 
+        Displays the diff for all .rej files If no file names are specified.
 
     Example:
     -------
@@ -388,23 +389,29 @@ def clean(
         help="Preview files before deleting",
     ),
     ) -> None:
-    """Deletes all .rej files in the current directory and subdirectories.
+    """Deletes one or all .rej files in the current directory and subdirectories.
 
     Optional preview before deletion.
 
     Args:
     ----
+        rej_files (Optional, List[str]): a list of names of files to be deleted. 
+        apply_to_all_files (Optional, bool): determines if all files should be removed. Defaults to "False". 
         preview (bool): If True, previews the files before deleting. Defaults to False.
 
     Example:
     -------
+        - To delete a file file.txt.rej without preview, run:
+        ```bash
+        rejx clean file.txt.rej
+        ```
         - To delete all .rej files without preview, run:
           ```bash
-          rejx clean
+          rejx clean --all
           ```
         - To preview files before deletion, run:
           ```bash
-          rejx clean --preview
+          rejx clean --all --preview
           ```
     """
     if apply_to_all_files: 
