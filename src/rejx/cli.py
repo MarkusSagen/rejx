@@ -336,7 +336,7 @@ def build_file_tree(rej_files: list) -> Tree:
 
 @app.command()
 def ls(
-    hidden: Annotated[bool, typer.Option("--no-hidden", help="set this flag to skip hidden files.")] = True,
+    hidden: Optional[bool] = typer.Option(True, help="Show or hide hidden files."),
     view: Optional[str] = typer.Option("list", help="View as 'list' or 'tree'"),
 ) -> None:
     """Lists all .rej files in the current directory and subdirectories.
@@ -345,6 +345,7 @@ def ls(
 
     Args:
     ----
+        hidden (Optional[bool], optional): Determines whether hidden files should be shown. Defaults to `hidden`.
         view (Optional[str], optional): The view format. Can be 'list' or 'tree'. Defaults to 'list'.
 
     Example:
