@@ -381,11 +381,13 @@ def ls(
 
 @app.command()
 def clean(
+    rej_files: List[str] = typer.Argument( default = None ),
+    apply_to_all_files: Optional[bool] = typer.Option(False,"--all", help="Apply changes from all .rej files.", show_default=False),
     preview: bool = typer.Option(
         False,
         help="Preview files before deleting",
     ),
-) -> None:
+    ) -> None:
     """Deletes all .rej files in the current directory and subdirectories.
 
     Optional preview before deletion.
@@ -405,7 +407,12 @@ def clean(
           rejx clean --preview
           ```
     """
-    rej_files = find_rej_files()
+    if apply_to_all_files: 
+        rej_files = find_rej_files()
+    
+    elif rej_files is None:
+        logging.error("No filename specified.")
+    
     console = Console()
 
     if not rej_files:
