@@ -106,12 +106,12 @@ def test_ls_tree():
 
 
 def test_clean():
-    result = runner.invoke(app, ["clean"])
+    result = runner.invoke(app, ["clean","--all"])
     assert result.exit_code == 0
 
 
 def test_clean_with_preview():
-    result = runner.invoke(app, ["clean", "--preview"], input="y\n")
+    result = runner.invoke(app, ["clean","all", "--preview"], input="y\n")
     assert result.exit_code == 0
 
 
