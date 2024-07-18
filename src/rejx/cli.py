@@ -8,10 +8,9 @@ import os
 import pathlib
 import re
 from difflib import unified_diff
-from typing import Optional
+from typing import Optional, List
 
 import typer
-from typing import List
 from typing_extensions import Annotated
 
 from rich.console import Console
@@ -190,7 +189,7 @@ def process_rej_file(rej_file_path: str) -> bool:
 
 @app.command()
 def fix(
-    rej_files: Annotated[Optional[List[str]], typer.Argument(default=None)],
+    rej_files: Annotated[Optional[List[str]], typer.Argument(None)],
     apply_to_all_files: Optional[bool] = typer.Option(False,"--all", help="Apply changes from all .rej files.", show_default=False)
     ) -> None:
     """Applies changes from a specified .rej file to its corresponding original file.
@@ -213,7 +212,7 @@ def fix(
         ```
     """
     if apply_to_all_files:
-        for rej_file in find_rej_files(hidden=True):
+        for rej_file in find_rej_files():
             process_rej_file(rej_file)
     
     elif rej_files is None:
