@@ -29,7 +29,7 @@ logging.basicConfig(
 app = typer.Typer()
 
 
-def find_rej_files(no_hidden: bool = False) -> list[str]:
+def find_rej_files(hidden: bool = True) -> list[str]:
     """Finds all .rej files in the current directory and its subdirectories.
 
     Returns:
@@ -43,10 +43,10 @@ def find_rej_files(no_hidden: bool = False) -> list[str]:
         print(rej_files)  # Prints paths to all .rej files.
         ```
     """
-    if no_hidden:
-        return glob.glob("**/*.rej", recursive=True)
-    else:
+    if hidden:
         return glob.glob("**/*.rej", recursive=True) + glob.glob("**/.*.rej", recursive=True)
+    else:
+        return glob.glob("**/*.rej", recursive=True)
 
 
 def parse_rej_file(rej_file_path: str) -> list[str]:
@@ -336,7 +336,7 @@ def build_file_tree(rej_files: list) -> Tree:
 
 @app.command()
 def ls(
-    no_hidden: Annotated[bool, typer.Option("--no-hidden")] = False,
+    hidden: Annotated[bool, typer.Option("--no-hidden", help="set this flag to skip hidden .rej files.")] = True,
     view: Optional[str] = typer.Option("list", help="View as 'list' or 'tree'"),
 ) -> None:
     """Lists all .rej files in the current directory and subdirectories.
@@ -358,7 +358,7 @@ def ls(
           rejx ls --view tree
           ```
     """
-    rej_files = find_rej_files(no_hidden = no_hidden)
+    rej_files = find_rej_files(hidden = hidden)
     console = Console()
 
     if not rej_files:
