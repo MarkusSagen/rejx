@@ -33,7 +33,7 @@ Usage:
 
 `rejx fix path/to/file1.rej path/to/file2.rej ...`
 
-Passing the optional flag `--all` applies the changes from all .rej files to their corresponding original files. Usage: 
+Passing the optional flag `--all` applies the changes from all .rej files to their corresponding original files. Usage:
 `rejx fix --all`
 
 ### `diff`
@@ -43,7 +43,7 @@ Usage:
 
 `rejx diff <filename1> <filename2> ...`
 
-If no file name is passed, this displays the difference for all .rej files. 
+If no file name is passed, this displays the difference for all .rej files.
 
 Note: This command uses a pager for output. Use arrow keys or Vim bindings to navigate, and q to quit.
 
@@ -75,10 +75,11 @@ With preview:
 `rejx clean path/to/file1.rej path/to/file2.rej ... --preview`
 
 By passing the optional `--all` flag, this command deletes all the .rej files in the current directory and subdirectories.
-Usage: 
+Usage:
 `rejx clean --all`
 
-This can be combined with the `--preview` option. 
+This can be combined with the `--preview` option.
 Usage:
 `rejx clean --all --preview`
+
 ______________________________________________________________________

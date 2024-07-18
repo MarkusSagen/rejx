@@ -8,10 +8,9 @@ import os
 import pathlib
 import re
 from difflib import unified_diff
-from typing import Optional, List
+from typing import Optional
 
 import typer
-
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.prompt import Confirm
@@ -186,17 +185,18 @@ def process_rej_file(rej_file_path: str) -> bool:
 
     return success
 
+
 @app.command()
 def fix(
-    rej_files: List[str] = typer.Argument( default = None ),
-    apply_to_all_files: Optional[bool] = typer.Option(False,"--all", help="Apply changes from all .rej files.", show_default=False)
-    ) -> None:
+    rej_files: list[str] = typer.Argument(default=None),  # noqa: B008
+    apply_to_all_files: Optional[bool] = typer.Option(False, "--all", help="Apply changes from all .rej files.", show_default=False),
+) -> None:
     """Applies changes from a specified .rej file to its corresponding original file.
 
     Args:
     ----
         rej_file (str): The path to the .rej file to be processed.
-        apply_to_all_files (Optional[bool]): Determines whether all files should be fixed. Default: False. 
+        apply_to_all_files (Optional[bool]): Determines whether all files should be fixed. Default: False.
 
     Example:
     -------
@@ -205,18 +205,18 @@ def fix(
         rejx fix path/to/file.rej
         ```
 
-        To fix all files, run: 
+        To fix all files, run:
         ```bash
-        rejx fix --all 
+        rejx fix --all
         ```
     """
     if apply_to_all_files:
         for rej_file in find_rej_files():
             process_rej_file(rej_file)
-    
+
     elif rej_files is None:
-        logging.error(f"No file name specified")
-    
+        logging.error("No file name specified")
+
     else:
         for rej_file in rej_files:
             process_rej_file(rej_file)
@@ -224,9 +224,10 @@ def fix(
 
 @app.command()
 def diff(
-    rej_files: List[str] = typer.Argument( default = None )
-    ) -> None:
-    """Displays the diff of changes proposed by .rej files against their corresponding original files. 
+    rej_files: list[str] = typer.Argument(default=None),  # noqa: B008
+) -> None:
+    """Displays the diff of changes proposed by .rej files against their corresponding original files.
+
         Displays the diff for all .rej files If no file names are specified.
 
     Example:
@@ -382,21 +383,21 @@ def ls(
 
 @app.command()
 def clean(
-    rej_files: List[str] = typer.Argument( default = None ),
-    apply_to_all_files: Optional[bool] = typer.Option(False,"--all", help="Apply changes from all .rej files.", show_default=False),
+    rej_files: list[str] = typer.Argument(default=None),  # noqa: B008
+    apply_to_all_files: Optional[bool] = typer.Option(False, "--all", help="Apply changes from all .rej files.", show_default=False),
     preview: bool = typer.Option(
         False,
         help="Preview files before deleting",
     ),
-    ) -> None:
+) -> None:
     """Deletes one or all .rej files in the current directory and subdirectories.
 
     Optional preview before deletion.
 
     Args:
     ----
-        rej_files (Optional, List[str]): a list of names of files to be deleted. 
-        apply_to_all_files (Optional, bool): determines if all files should be removed. Defaults to "False". 
+        rej_files (Optional, List[str]): a list of names of files to be deleted.
+        apply_to_all_files (Optional, bool): determines if all files should be removed. Defaults to "False".
         preview (bool): If True, previews the files before deleting. Defaults to False.
 
     Example:
@@ -414,12 +415,12 @@ def clean(
           rejx clean --all --preview
           ```
     """
-    if apply_to_all_files: 
+    if apply_to_all_files:
         rej_files = find_rej_files()
-    
+
     elif rej_files is None:
         logging.error("No filename specified.")
-    
+
     console = Console()
 
     if not rej_files:
