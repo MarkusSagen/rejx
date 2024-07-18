@@ -223,7 +223,9 @@ def fix(
 
 
 @app.command()
-def diff() -> None:
+def diff(
+    rej_files: List[str] = typer.Argument( default = None )
+    ) -> None:
     """Displays the diff of changes proposed by .rej files against their corresponding original files.
 
     Example:
@@ -233,10 +235,13 @@ def diff() -> None:
         rejx diff
         ```
     """
+    if rej_files is None:
+        rej_files = find_rej_files()
+
     console = Console()
     file_logs = []
 
-    for rej_file in find_rej_files():
+    for rej_file in rej_files:
         try:
             target_file_path = rej_file.replace(".rej", "")
             rej_lines = parse_rej_file(rej_file)
