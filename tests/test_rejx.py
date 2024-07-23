@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-import rejx
+import rejx.utils
 from rejx import app
 
 # Constants
@@ -47,13 +47,13 @@ def _setup_sample_rej_file() -> None:
 
 def test_find_rej_files():
     os.chdir(TEST_DATA_DIR)  # Change current directory to test data directory
-    rej_files = rejx.find_rej_files()
+    rej_files = rejx.utils.find_rej_files()
     assert len(rej_files) > 0
     assert all(file.endswith(".rej") for file in rej_files)
 
 
 def test_parse_rej_file(sample_rej_file: str):
-    rej_lines = rejx.parse_rej_file(sample_rej_file)
+    rej_lines = rejx.utils.parse_rej_file(sample_rej_file)
     assert rej_lines is not None
     assert isinstance(rej_lines, list)
 
@@ -61,8 +61,8 @@ def test_parse_rej_file(sample_rej_file: str):
 def test_apply_changes(sample_rej_file: str, sample_target_file: str):
     with open(sample_target_file, encoding="utf-8") as f:
         target_lines = f.readlines()
-    rej_lines = rejx.parse_rej_file(sample_rej_file)
-    modified_lines = rejx.apply_changes(target_lines, rej_lines)
+    rej_lines = rejx.utils.parse_rej_file(sample_rej_file)
+    modified_lines = rejx.utils.apply_changes(target_lines, rej_lines)
 
     expected_lines = ["Line 1\n", "Line 2 - Modified\n", "Line 3\n"]
 
@@ -71,7 +71,7 @@ def test_apply_changes(sample_rej_file: str, sample_target_file: str):
 
 
 def test_process_rej_file(sample_rej_file: str):
-    result = rejx.process_rej_file(sample_rej_file)
+    result = rejx.utils.process_rej_file(sample_rej_file)
     assert result
 
 
@@ -106,12 +106,12 @@ def test_ls_tree():
 
 
 def test_clean():
-    result = runner.invoke(app, ["clean","--all"])
+    result = runner.invoke(app, ["clean", "--all"])
     assert result.exit_code == 0
 
 
 def test_clean_with_preview():
-    result = runner.invoke(app, ["clean","all", "--preview"], input="y\n")
+    result = runner.invoke(app, ["clean", "all", "--preview"], input="y\n")
     assert result.exit_code == 0
 
 
