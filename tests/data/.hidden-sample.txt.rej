@@ -1,0 +1,6 @@
+--- sample.txt
++++ sample.txt
+@@ -2,3 +2,3 @@
+-Line 2
++Line 2 - Modified
+Line 3
