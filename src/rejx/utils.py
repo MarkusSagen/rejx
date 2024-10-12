@@ -14,16 +14,20 @@ from rejx.logger import logger
 
 
 def find_rej_files(
+    path: str = ".",
     *,
     exclude_hidden: bool | None = True,
     ignore: Optional[list[str]] = None,
+    recursive: bool = True,
 ) -> list[str]:
-    """Finds all .rej files in the current directory and its subdirectories.
+    """Finds all .rej files in the specified path and its subdirectories.
 
     Args:
     ----
-        exclude_hidden (bool): Include hidden files.
+        path (str): The path to start searching for .rej files. Defaults to current directory.
+        exclude_hidden (bool): Exclude hidden files.
         ignore(Optional[List[str]]): List of regex patterns of directories to ignore rej files from.
+        recursive (bool): Whether to search recursively in subdirectories. Defaults to True.
 
     Returns:
     -------
@@ -32,13 +36,15 @@ def find_rej_files(
     Example:
     -------
         ```python
-        rej_files = find_rej_files()
+        rej_files = find_rej_files("path/to/directory", recursive=True)
         print(rej_files)  # Prints paths to all .rej files.
         ```
     """
-    rej_file_matches = glob.glob("**/*.rej", recursive=True)
+    pattern = "**/*.rej" if recursive else "*.rej"
+    rej_file_matches = glob.glob(os.path.join(path, pattern), recursive=recursive)
     if not exclude_hidden:
-        rej_file_matches += glob.glob("**/.*.rej", recursive=True)
+        hidden_pattern = "**/.*.rej" if recursive else ".*.rej"
+        rej_file_matches += glob.glob(os.path.join(path, hidden_pattern), recursive=recursive)
 
     filtered_files = [f for f in rej_file_matches if not any(re.search(pattern, f) for pattern in ignore or [])]
 
@@ -168,6 +174,10 @@ def process_rej_file(rej_file_path: str) -> bool:
     """
     success = False
 
+    if not rej_file_path.endswith(".rej"):
+        logger.error(f"Invalid file type: {rej_file_path}. Only .rej files are supported.")
+        return success
+
     try:
         target_file_path = rej_file_path.replace(".rej", "")
         rej_lines = parse_rej_file(rej_file_path)
@@ -215,7 +225,7 @@ def build_file_tree(rej_files: list) -> Tree:
         ```
     """
     tree = Tree(
-        ":open_file_folder: Rejected Files Tree",
+        "[bold bright_blue].",
         guide_style="bold bright_blue",
     )
     node_dict = {}
