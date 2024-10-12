@@ -22,11 +22,11 @@ setup_logger()
 
 @app.command()
 def fix(
-    rej_files: list[str] = typer.Argument(default=None),
+    path: str = typer.Argument(default=".", help="Path to start searching for .rej files"),
     apply_to_all_files: Optional[bool] = typer.Option(
         False,
         "--all",
-        help="Apply changes from all .rej files.",
+        help="Apply changes to all .rej files in the specified path and its subdirectories.",
         show_default=False,
     ),
     exclude_hidden: Optional[bool] = typer.Option(
@@ -37,11 +37,11 @@ def fix(
     ),
     ignore: Optional[list[str]] = typer.Option(None, "--ignore", help="Regex patterns to ignore directories"),
 ) -> None:
-    """Applies changes from a specified .rej file to its corresponding original file.
+    """Applies changes from specified .rej files to their corresponding original files.
 
     Args:
     ----
-        rej_file (str): The path to the .rej file to be processed.
+        path (str): The path to start searching for .rej files. Defaults to current directory.
         apply_to_all_files (Optional[bool]): Determines whether all files should be fixed. Default: False.
         exclude_hidden (Optional[bool]): Determines whether to hide hidden files from output. Defaults to `False`
         ignore(Optional[List[str]]): List of regex patterns of directories to ignore rej files from.
@@ -53,29 +53,49 @@ def fix(
         rejx fix path/to/file.rej
         ```
 
-        To fix all files, run:
+        To fix all .rej files in the current directory and subdirectories, run:
         ```bash
         rejx fix --all
         ```
+
+        To fix all .rej files in a specific directory and its subdirectories, run:
+        ```bash
+        rejx fix path/to/directory --all
+        ```
     """
-    if apply_to_all_files:
-        for rej_file in rejx.utils.find_rej_files(
+    if pathlib.Path(path).is_file() and not apply_to_all_files:
+        rej_files = [path]
+    elif pathlib.Path(path).is_dir() and apply_to_all_files:
+        rej_files = rejx.utils.find_rej_files(
+            path=path,
             exclude_hidden=exclude_hidden,
             ignore=ignore,
-        ):
-            rejx.utils.process_rej_file(rej_file)
-
-    elif rej_files is None:
-        logger.error("No file name specified")
-
+        )
     else:
-        for rej_file in rej_files:
-            rejx.utils.process_rej_file(rej_file)
+        logger.error("Please specify a file or use --all with a directory path.")
+        raise typer.Exit(1)
+
+    if not rej_files:
+        logger.error("No .rej files specified or found")
+        return
+
+    for rej_file in rej_files:
+        if not rej_file.endswith(".rej"):
+            logger.error(f"Skipping non-.rej file: {rej_file}")
+            continue
+        rejx.utils.process_rej_file(rej_file)
 
 
 @app.command()
+@app.command()
 def diff(
-    rej_files: list[str] = typer.Argument(default=None),
+    path: str = typer.Argument(default=".", help="Path to start searching for .rej files"),
+    apply_to_all_files: Optional[bool] = typer.Option(
+        False,
+        "--all",
+        help="Display diff for all .rej files in the specified path and its subdirectories.",
+        show_default=False,
+    ),
     exclude_hidden: Optional[bool] = typer.Option(
         False,
         "--exclude-hidden",
@@ -86,26 +106,36 @@ def diff(
 ) -> None:
     """Displays the diff of changes proposed by .rej files against their corresponding original files.
 
-    Displays the diff for all .rej files If no file names are specified.
-
     Args:
-    -----
-        rej_files (list[str]): Rej files to apply diff.
+    ----
+        path (str): The path to start searching for .rej files. Defaults to current directory.
+        apply_to_all_files (Optional[bool]): Determines whether to show diff for all .rej files recursively. Default: False.
         exclude_hidden (Optional[bool]): Determines whether to hide hidden files from output. Defaults to `False`
         ignore(Optional[List[str]]): List of regex patterns of directories to ignore rej files from.
 
     Example:
     -------
-        To display diffs for all .rej files, run:
+        To display diff for a specific .rej file:
         ```bash
-        rejx diff
+        rejx diff path/to/file.rej
+        ```
+        To display diff for all .rej files in the current directory and subdirectories:
+        ```bash
+        rejx diff --all
         ```
     """
-    if rej_files is None:
+    if pathlib.Path(path).is_file() and not apply_to_all_files:
+        rej_files = [path]
+    elif pathlib.Path(path).is_dir():
         rej_files = rejx.utils.find_rej_files(
+            path=path,
             exclude_hidden=exclude_hidden,
             ignore=ignore,
+            recursive=apply_to_all_files,
         )
+    else:
+        logger.error("Please specify a valid file or directory path.")
+        raise typer.Exit(1)
 
     console = Console()
     file_logs = []
@@ -143,7 +173,9 @@ def diff(
         )
 
         for logs in file_logs:
-            console.rule(f"\n{logs['filename']}\n", align="left")
+            filename = logs["filename"]
+
+            console.rule(f"\n{filename}\n", align="left")
             console.print(
                 Syntax(
                     logs["diff"],
@@ -157,7 +189,15 @@ def diff(
 
 
 @app.command()
+@app.command()
 def ls(
+    path: str = typer.Argument(default=".", help="Path to start searching for .rej files"),
+    apply_to_all_files: Optional[bool] = typer.Option(
+        False,
+        "--all",
+        help="List all .rej files in the specified path and its subdirectories.",
+        show_default=False,
+    ),
     exclude_hidden: Optional[bool] = typer.Option(
         False,
         "--exclude-hidden",
@@ -167,31 +207,46 @@ def ls(
     ignore: Optional[list[str]] = typer.Option(None, "--ignore", help="Regex patterns to ignore directories"),
     view: Optional[str] = typer.Option("list", help="View as 'list' or 'tree'"),
 ) -> None:
-    """Lists all .rej files in the current directory and subdirectories.
+    """Lists .rej files in the specified path.
 
     Supports different view formats.
 
     Args:
     ----
+        path (str): The path to start searching for .rej files. Defaults to current directory.
+        apply_to_all_files (Optional[bool]): Determines whether to list all .rej files recursively. Default: False.
         exclude_hidden (Optional[bool]): Determines whether to hide hidden files from output. Defaults to `False`
         ignore(Optional[List[str]]): List of regex patterns of directories to ignore rej files from.
         view (Optional[str]): The view format. Can be 'list' or 'tree'. Defaults to 'list'.
 
     Example:
     -------
-        - To list .rej files in list format, run:
+        - To list .rej files in the current directory:
           ```bash
           rejx ls
           ```
-        - To display .rej files in a tree structure, run:
+        - To list all .rej files recursively:
           ```bash
-          rejx ls --view tree
+          rejx ls --all
+          ```
+        - To list .rej files in a specific directory:
+          ```bash
+          rejx ls path/to/directory
           ```
     """
-    rej_files = rejx.utils.find_rej_files(
-        exclude_hidden=exclude_hidden,
-        ignore=ignore,
-    )
+    if pathlib.Path(path).is_file() and not apply_to_all_files:
+        rej_files = [path]
+    elif pathlib.Path(path).is_dir():
+        rej_files = rejx.utils.find_rej_files(
+            path=path,
+            exclude_hidden=exclude_hidden,
+            ignore=ignore,
+            recursive=apply_to_all_files,
+        )
+    else:
+        logger.error("Please specify a valid directory path.")
+        raise typer.Exit(1)
+
     console = Console()
 
     if not rej_files:
@@ -210,12 +265,58 @@ def ls(
 
 
 @app.command()
+def tree(
+    path: str = typer.Argument(default=".", help="Path to start searching for .rej files"),
+    apply_to_all_files: Optional[bool] = typer.Option(
+        True,
+        "--all",
+        help="List all .rej files in the specified path and its subdirectories.",
+        show_default=False,
+    ),
+    exclude_hidden: Optional[bool] = typer.Option(
+        False,
+        "--exclude-hidden",
+        help="Hide hidden files.",
+        show_default=False,
+    ),
+    ignore: Optional[list[str]] = typer.Option(None, "--ignore", help="Regex patterns to ignore directories"),
+) -> None:
+    """Displays .rej files in a tree structure.
+
+    This is an alias for `rejx ls --view tree`.
+
+    Args:
+    ----
+        path (str): The path to start searching for .rej files. Defaults to current directory.
+        apply_to_all_files (Optional[bool]): Determines whether to list all .rej files recursively. Default: True.
+        exclude_hidden (Optional[bool]): Determines whether to hide hidden files from output. Defaults to `False`
+        ignore(Optional[List[str]]): List of regex patterns of directories to ignore rej files from.
+
+    Example:
+    -------
+        To display .rej files in a tree structure:
+        ```bash
+        rejx tree
+        ```
+    """
+    rej_files = rejx.utils.find_rej_files(
+        path=path,
+        exclude_hidden=exclude_hidden,
+        ignore=ignore,
+        recursive=apply_to_all_files,
+    )
+    tree = rejx.utils.build_file_tree(rej_files)
+    console = Console()
+    console.print(tree)
+
+
+@app.command()
 def clean(
-    rej_files: list[str] = typer.Argument(default=None),
+    path: str = typer.Argument(default=".", help="Path to start searching for .rej files"),
     apply_to_all_files: Optional[bool] = typer.Option(
         False,
         "--all",
-        help="Apply changes from all .rej files.",
+        help="Delete all .rej files in the specified path and its subdirectories.",
         show_default=False,
     ),
     preview: bool = typer.Option(
@@ -230,13 +331,13 @@ def clean(
     ),
     ignore: Optional[list[str]] = typer.Option(None, "--ignore", help="Regex patterns to ignore directories"),
 ) -> None:
-    """Deletes one or all .rej files in the current directory and subdirectories.
+    """Deletes .rej files in the specified path.
 
     Optional preview before deletion.
 
     Args:
     ----
-        rej_files (Optional, List[str]): a list of names of files to be deleted.
+        path (str): The path to start searching for .rej files. Defaults to current directory.
         apply_to_all_files (Optional, bool): determines if all files should be removed. Defaults to "False".
         preview (bool): If True, previews the files before deleting. Defaults to False.
         exclude_hidden (Optional[bool]): Determines whether to hide hidden files from output. Defaults to `False`
@@ -244,27 +345,30 @@ def clean(
 
     Example:
     -------
-        - To delete a file file.txt.rej without preview, run:
-        ```bash
-        rejx clean file.txt.rej
-        ```
-        - To delete all .rej files without preview, run:
+        - To delete a specific .rej file without preview:
+          ```bash
+          rejx clean path/to/file.txt.rej
+          ```
+        - To delete all .rej files in the current directory and subdirectories:
           ```bash
           rejx clean --all
           ```
-        - To preview files before deletion, run:
+        - To preview files before deletion in a specific directory:
           ```bash
-          rejx clean --all --preview
+          rejx clean path/to/directory --all --preview
           ```
     """
-    if apply_to_all_files:
+    if pathlib.Path(path).is_file() and not apply_to_all_files:
+        rej_files = [path]
+    elif pathlib.Path(path).is_dir() and apply_to_all_files:
         rej_files = rejx.utils.find_rej_files(
+            path=path,
             exclude_hidden=exclude_hidden,
             ignore=ignore,
         )
-
-    elif rej_files is None:
-        logger.error("No filename specified.")
+    else:
+        logger.error("Please specify a file or use --all with a directory path.")
+        raise typer.Exit(1)
 
     console = Console()
 
