@@ -255,8 +255,7 @@ doctest_optionflags = [
 ]
 
 [tool.pytest_env]
-# Mock some of the envs in `src/heimdall/constants.py`
-LOG_LEVEL = "CRITICAL" # INFO, WARNING, ERROR, CRITICAL
+REJX_LOG_LEVEL = "INFO" # INFO, WARNING, ERROR, CRITICAL
 
 [tool.mypy]
 plugins = []

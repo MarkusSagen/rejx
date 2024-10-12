@@ -13,9 +13,11 @@ from rich.syntax import Syntax
 from rich.text import Text
 
 import rejx.utils
-from rejx.logger import logger
+from rejx.logger import logger, setup_logger
 
 app = typer.Typer()
+
+setup_logger()
 
 
 @app.command()
