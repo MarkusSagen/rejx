@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rejx"
-version = "0.0.3"
+version = "0.1.0"
 description = "Rej(spe)X - Deal with .rej file with minimal pain"
 authors = ["Markus Sagen <Markus.John.Sagen@gmail.com>"]
 keywords = ["git", "cookiecutter", "cruft", "rej"]
@@ -62,11 +62,7 @@ builtins = ["_"]
 cache-dir = "~/.cache/ruff"
 src = ["src", "tests"]
 include = ["*.py"]
-extend-exclude = [
-    "test_*.py",
-    "tests",
-    "docs",
-]
+extend-exclude = ["test_*.py", "tests", "docs"]
 
 [tool.ruff.format]
 # -- cmd config
@@ -86,23 +82,77 @@ preview = true
 # settings
 flake8-quotes = { inline-quotes = "double", multiline-quotes = "double" }
 flake8-tidy-imports = { ban-relative-imports = "all" }
-flake8-comprehensions = { "allow-dict-calls-with-keyword-arguments" = true }  # C408 - Allow dict calls with keyword arguments
+flake8-comprehensions = { "allow-dict-calls-with-keyword-arguments" = true } # C408 - Allow dict calls with keyword arguments
 isort = { known-first-party = ["heimdall", "tests"] }
 mccabe = { max-complexity = 10 }
 pydocstyle = { convention = "google" }
 exclude = ["*.ipynb"]
-ignore = ["E203", "E501", "FIX002", "PTH123", "C901", "PD101", "COM812", "PTH118", "PTH207", "PTH207", "UP007", "B008"]  # Typer does not support UP007
-extend-select = ["Q", "RUF100", "C90", "UP", "I", "T", "B", "F", "Q", "COM812"] # "D",
-extend-ignore = ["D105", "D107", "D205", "D415", "EM101", "G004", "ARG001", "ARG002", "PD901", "RET504"]
-fixable = ["F", "N", "D", "W", "INP", "PLC", "PLR", "PLW", "RUF", "SIM", "Q", "UP", "TID", "I", "EM", "FBT", "PD", "E501"]
+ignore = [
+    "E203",
+    "E501",
+    "FIX002",
+    "PTH123",
+    "C901",
+    "PD101",
+    "COM812",
+    "PTH118",
+    "PTH207",
+    "PTH207",
+    "UP007",
+    "B008",
+] # Typer does not support UP007
+extend-select = [
+    "Q",
+    "RUF100",
+    "C90",
+    "UP",
+    "I",
+    "T",
+    "B",
+    "F",
+    "Q",
+    "COM812",
+] # "D",
+extend-ignore = [
+    "D105",
+    "D107",
+    "D205",
+    "D415",
+    "EM101",
+    "G004",
+    "ARG001",
+    "ARG002",
+    "PD901",
+    "RET504",
+]
+fixable = [
+    "F",
+    "N",
+    "D",
+    "W",
+    "INP",
+    "PLC",
+    "PLR",
+    "PLW",
+    "RUF",
+    "SIM",
+    "Q",
+    "UP",
+    "TID",
+    "I",
+    "EM",
+    "FBT",
+    "PD",
+    "E501",
+]
 extend-safe-fixes = ["E", "F401", "E501"]
 extend-unsafe-fixes = ["E", "F401", "E501"]
 select = [
-    "F",     # pyflakes
-    "E",     # pycodestyle
-    "W",     # pycodestyle
-    "C90",   # mccabe
-    "I",     # isort
+    "F",   # pyflakes
+    "E",   # pycodestyle
+    "W",   # pycodestyle
+    "C90", # mccabe
+    "I",   # isort
     # "D",     # pydocstyle
     "ASYNC", # flake8-async
     "A",     # flake8-builtins
@@ -143,16 +193,10 @@ select = [
 "test_*.py" = ["ANN201", "S101"]
 
 [tool.coverage.run]
-omit = [
-    '*/.local/*',
-    '__init__.py',
-    'tests/*',
-    '*/tests/*',
-    '.venv/*'
-]
+omit = ['*/.local/*', '__init__.py', 'tests/*', '*/tests/*', '.venv/*']
 
 [tool.coverage.report]
-fail_under = 0  # TODO: increase this
+fail_under = 0 # TODO: increase this
 show_missing = true
 precision = 2
 skip_empty = true
@@ -178,19 +222,26 @@ filterwarnings = ['error']
 xfail_strict = true
 # pytest flags
 addopts = [
-    '--cov-context', 'test',
-    '--cov-config', 'pyproject.toml',
-    '--cov-report', 'term',
-    '--cov-report', 'html:reports/coverage-html',
-    '--cov-report', 'xml:reports/coverage.xml',
-    '--cov-report', 'term-missing',
+    '--cov-context',
+    'test',
+    '--cov-config',
+    'pyproject.toml',
+    '--cov-report',
+    'term',
+    '--cov-report',
+    'html:reports/coverage-html',
+    '--cov-report',
+    'xml:reports/coverage.xml',
+    '--cov-report',
+    'term-missing',
     '--cov=.',
     '--no-cov-on-fail',
     '--ignore=docs',
     '--capture=no',
     '--log-cli-level=WARNING',
     '-ra',
-    '-W', 'ignore'
+    '-W',
+    'ignore',
 ]
 # pytest-md-report
 md_report = true
@@ -200,16 +251,15 @@ md_report_color = "auto"
 doctest_optionflags = [
     "ELLIPSIS",
     "NORMALIZE_WHITESPACE",
-    "IGNORE_EXCEPTION_DETAIL"
+    "IGNORE_EXCEPTION_DETAIL",
 ]
 
 [tool.pytest_env]
 # Mock some of the envs in `src/heimdall/constants.py`
-ENV = "cicd"
-LOG_LEVEL = "CRITICAL"  # INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL = "CRITICAL" # INFO, WARNING, ERROR, CRITICAL
 
 [tool.mypy]
-plugins = [ ]
+plugins = []
 follow_imports = "silent"
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -221,10 +271,12 @@ ignore_missing_imports = true
 disallow_untyped_defs = true
 
 [tool.pyright]
-include = [ "src/rejx" ]
-exclude = [ ".venv" ]
+# https://microsoft.github.io/pyright/#/configuration?id=sample-pyprojecttoml-file
+include = ["src"]
+exclude = [".venv"]
 venvPath = "."
 venv = ".venv"
+reportInvalidTypeForm = false
 
 [tool.codespell]
 # codespell -L 'rejx' -S '.git,.venv,data,.env*,poetry*,*.log,*.csv,*.ipynb,*.html'
